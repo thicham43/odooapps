@@ -11,9 +11,9 @@ Advanced way to search products in large catalogs or databases.
 User friendly and saves you precious time when working on your sales quotations or orders 
                    """,
     'category': 'tools',
-    'author': 'HichamTAROQ',
+    'author': 'Thicham',
     'website': 'https://github.com/thicham43',
-    'depends': ['sale'],
+    'depends': ['account'],
     'data': [
              'security/ir.model.access.csv',
              'views/assets.xml',
