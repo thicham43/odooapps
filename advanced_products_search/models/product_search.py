@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
 
@@ -8,85 +7,86 @@ class ProductSearch(models.Model):
     _name = "product.search"
     _description = 'Product Search Engine'
 
-    so_id = fields.Many2one(comodel_name="sale.order", string="SO")
-    frs_id = fields.Many2one(comodel_name="res.partner", string="Fournisseur")
-    categ_id = fields.Many2one(comodel_name="product.type", string="Type Produit")
-    name = fields.Char(string="Désignation")
-    reference = fields.Char(string="Référence")
-    product_ids = fields.Many2many(comodel_name="product.template", relation="product_search_product_template_rel", string="Articles")
-    inserted_products = fields.One2many(comodel_name="inserted.product", inverse_name="wizard_id", string="Articles insérés")
-    nb_prods = fields.Text(string='nb of prods found')
+    so_id = fields.Many2one(comodel_name="sale.order", string="Sale Order")
+    name = fields.Char(string="Product Name")
+    categ_id = fields.Many2one(comodel_name="product.category", string="Category")
+    type = fields.Selection(selection=[('consu', 'Consumable'),
+                                       ('service', 'Service'),
+                                       ('product', 'Storable')], string="Type")
+    default_code = fields.Char(string="Internal Reference")
+    barcode = fields.Char(string="Barcode")
+    lst_price_max = fields.Float(string="Max Sale price")
+    lst_price_min = fields.Float(string="Min Sale price")
+    product_ids = fields.Many2many(comodel_name="product.product", relation="product_search_product_product_rel")
+    inserted_products = fields.One2many(comodel_name="inserted.product", inverse_name="wizard_id")
+    prods_count = fields.Text(string='#of products found')
 
 
-    @api.onchange('frs_id', 'categ_id', 'name', 'reference',)
-    def onchange_fields_search(self):
-
-        req = """ SELECT pt.id  FROM product_template pt
-                  INNER JOIN product_product pp ON pp.product_tmpl_id = pt.id
-                  INNER JOIN res_partner frs ON frs.id = pt.frs_id
-                  WHERE frs.active = True AND pt.separateur != True AND  pt.sale_ok = True
-              """
-
-        if not (self.frs_id or self.categ_id or self.name or self.reference):
-            self.product_ids = None
-            return
-
-        if self.frs_id:
-            req += " AND pt.frs_id = %s" % self.frs_id.id
+    @api.onchange('name', 'categ_id', 'type', 'default_code', 'barcode', 'lst_price_max', 'lst_price_min')
+    def onchange_search_fields(self):
+        q = """ SELECT pp.id  FROM product_product pp
+                INNER JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                WHERE pt.sale_ok = True  
+            """
 
         if self.categ_id:
-            req += " AND pt.categ_id = %s" % self.categ_id.id
+            q += " AND pt.categ_id = %s" % self.categ_id.id
 
-        if self.reference:
-            reference = self.reference.replace("'", "''")
-            if self.force_reference == 'frs':
-                req += " AND pt.frs_code ilike  '%%%s%%' " % reference
-            elif self.force_reference == 'com':
-                req += " AND pt.commercial_code ilike '%%%s%%' " % reference
-            else:
-                req += " AND (pt.frs_code ilike  '%%%s%%' OR pt.commercial_code ilike '%%%s%%') " % (reference, reference)
+        if self.type:
+            q += " AND pt.type = '%s'" % self.type
+
+        if self.default_code:
+            default_code = self.default_code.replace("'", "''")
+            q += " AND pp.default_code ilike  '%%%s%%' " % default_code
+
+        if self.barcode:
+            q += " AND pp.barcode ilike  '%%%s%%' " % self.barcode
 
         if self.name:
+            name = self.name.replace("'", "''")
             if " " in self.name:
-                designation = self.name.replace("'", "''")
-                words = designation.split(" ")
+                words = name.split(" ")
                 if words:
-                    req += " AND ("
+                    q += " AND ("
                     for w in words:
                         if words.index(w) == len(words) - 1:
-                            req += " pt.name ilike '%%%s%%')" % w
+                            q += " pt.name ilike '%%%s%%')" % w
                         else:
-                            req += " pt.name ilike '%%%s%%' AND" % w
+                            q += " pt.name ilike '%%%s%%' AND" % w
             else:
-                designation = self.name.replace("'", "''")
-                req += " AND pt.name ilike '%{}%'".format(designation)
+                q += " AND pt.name ilike '%%%s%%'" % name
 
-        req_count = req.replace("SELECT pt.id", "SELECT count(pt.id)")
-        self._cr.execute(req_count)
-        result_count = self._cr.fetchall()
-        result_count = int(result_count[0][0])
-        req += " ORDER BY pt.name"
+        q_count = q.replace("SELECT pp.id", "SELECT count(pp.id)")
+        self._cr.execute(q_count)
+        count = int(self._cr.fetchall()[0][0])
+        q += " ORDER BY pt.name"
 
         self.product_ids = None
-        self.nb_prods = None
-        if result_count > 1000:
-            self.nb_prods = '+1000 articles trouvés! \n Veuillez affiner votre recherche :)'
-        elif result_count == 0:
-            self.nb_prods = 'Aucun article trouvé!'
+        self.prods_count = None
+        if count > 300:
+            self.prods_count = '+300 products found! \n Please use more filters :)'
+        elif count == 0:
+            self.prods_count = 'No products found!'
         else:
-            self._cr.execute(req)
+            self._cr.execute(q)
             self.product_ids = [p[0] for p in self._cr.fetchall()]
+
+        if self.lst_price_max:
+            self.product_ids = self.product_ids.filtered(lambda p: p.lst_price <= self.lst_price_max)
+
+        if self.lst_price_min:
+            self.product_ids = self.product_ids.filtered(lambda p: p.lst_price >= self.lst_price_min)
 
 
     def reset(self):
-        q = "DELETE FROM product_search_product_template_rel WHERE product_search_id=%s" % self.id
+        q = "DELETE FROM product_search_product_product_rel WHERE product_search_id=%s" % self.id
         self._cr.execute(q)
-        reset_all_fields = """ UPDATE product_search SET frs_id=null, categ_id=null, name=null,
-                               reference=null, nb_prods=null WHERE id = %s
+        reset_all_fields = """ UPDATE product_search SET default_code=null, type=null, categ_id=null,
+                               name=null, barcode=null, lst_price_max=null, lst_price_min=null WHERE id = %s
                            """ % self.id
         self._cr.execute(reset_all_fields)
         return {'type': 'ir.actions.act_window',
-                'name': "Products Search",
+                'name': "Products Search - %s" % self.so_id.name,
                 'res_model': 'product.search',
                 'res_id': self.id,
                 'view_mode': 'form',
@@ -94,8 +94,8 @@ class ProductSearch(models.Model):
                 }
 
 
-    def action_close(self):
-        q1 = "DELETE FROM product_search_product_template_rel WHERE product_search_id = %s " % self.id
+    def close(self):
+        q1 = "DELETE FROM product_search_product_product_rel WHERE product_search_id = %s " % self.id
         q2 = "DELETE FROM product_search WHERE id = %s " % self.id
         self._cr.execute(q1)
         self._cr.execute(q2)
@@ -106,10 +106,8 @@ class ProductSearch(models.Model):
         wizard = self.env['product.search'].browse(wizard_id)
         so = wizard.so_id
         sol_obj = self.env['sale.order.line']
-        product_obj = self.env['product.product']
-        for pid in selected_prods_ids:
-            product = product_obj.search([('product_tmpl_id', '=', pid)])
-            price = product.list_price
+        for product in self.env['product.product'].browse(selected_prods_ids):
+            price = product.lst_price
             next_sequence = so.order_line and max([l.sequence for l in so.order_line]) + 1 or 1
             vals = {'order_id': so.id,
                     'price_unit': price,
@@ -127,7 +125,6 @@ class InsertedProduct(models.Model):
     _description = 'Inserted Products through Search Engine'
 
     wizard_id = fields.Many2one(comodel_name="product.search", string="Search wizard")
-    frs = fields.Char(string='Frs')
-    name = fields.Char(string='Désignation')
-    frs_code = fields.Char(string='Réf Fournisseur')
-    unit_price = fields.Char(string='Unit Price')
+    name = fields.Char(string='Product Name')
+    default_code = fields.Char(string='Internal Reference')
+    price_unit = fields.Char(string='Price Unit')

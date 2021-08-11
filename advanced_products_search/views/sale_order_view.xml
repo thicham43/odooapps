@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_order_form_product_search" model="ir.ui.view">
+        <field name="name">view.order.form.product.search</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="order_line" position="before">
+                <button name="search_products" string="Search Products" type="object" icon="fa-search"
+                        attrs="{'invisible': [('state','in',('done','cancel'))]}" class="btn-secondary oe_edit_only so-prods-search"/>
+            </field>
+        </field>
+    </record>
+
+
+	
+</odoo>

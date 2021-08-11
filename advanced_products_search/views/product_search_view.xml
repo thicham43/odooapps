@@ -7,38 +7,36 @@
         <field name="model">product.search</field>
         <field name="arch" type="xml">
             <form class="prod_search_form">
-                <group>
-                    <group>
-                        <field name="frs_id" context="{'frs_changed':True}" options="{'limit': 10, 'no_create': True, 'no_open':true}"
-                               domain="[('supplier_rank', '>', 0), ('is_company', '=', True)]"/>
-                    </group>
+                <group class="search-filters">
                     <group>
                         <field name="name"/>
-                        <field name="reference" placeholder="fournisseur ou commerciale"/>
+                        <field name="default_code"/>
+                        <field name="barcode"/>
+                    </group>
+                    <group>
+                        <field name="categ_id" options="{'no_open': True, 'no_create': True}"/>
+                        <field name="type"/>
+                        <field name="lst_price_max"/>
+                        <field name="lst_price_min"/>
                     </group>
                 </group>
-                <group>
-                    <div class="control-btns">
-                        <div>
-                        </div>
-                        <div class="float_right">
-                            <button string="Terminer" name="action_close" class="btn-link" type="object"/>
-                            <span style="padding: 5px 0 0;margin:0 7px;font-size: 15px;color:#7c7bad;">|</span>
-                            <button string="Initialiser" name="reset" class="btn-link" type="object"/>
-                        </div>
-                    </div>
-                </group>
-                <div style="text-align:center; color:red;font-size: 13px;">
-                    <field name="nb_prods" nolabel="1" readonly="1" attrs="{'invisible': [('nb_prods','=','')]}"/>
+                <div class="control-btns">
+                    <button string="Reset" name="reset" type="object" class="btn-link"/>
+                    <span class="vertical-spacer">|</span>
+                    <button string="Close" name="close" type="object" class="btn-link"/>
+                </div>
+                <div class="prods_count_info">
+                    <field name="prods_count" nolabel="1" readonly="1" attrs="{'invisible': [('prods_count','=','')]}"/>
                 </div>
                 <notebook>
                     <page string="Products">
                         <group style="margin-top: 0;" attrs="{'invisible': [('product_ids','=',[])]}">
                             <field name="product_ids" nolabel="1" readonly="1" widget="m2m_selectable">
                                 <tree editable="bottom" class="list_product_search">
-                                    <field name="name" string="Désignation"/>
-                                    <field name="frs_code" string="Réf. Frs"/>
-                                    <field name="unit_price"/>
+                                    <field name="name"/>
+                                    <field name="default_code"/>
+                                    <field name="categ_id"/>
+                                    <field name="lst_price" string="Price Unit"/>
                                     <field name="id"/>
                                 </tree>
                             </field>
@@ -49,8 +47,8 @@
                             <field name="inserted_products" nolabel="1" readonly="1">
                                 <tree editable="bottom" class="list_inserted_products">
                                     <field name="name"/>
-                                    <field name="frs_code"/>
-                                    <field name="unit_price"/>
+                                    <field name="default_code"/>
+                                    <field name="price_unit"/>
                                 </tree>
                             </field>
                         </group>

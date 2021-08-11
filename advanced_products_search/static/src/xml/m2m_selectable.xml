@@ -4,7 +4,7 @@
     <t t-name="Many2ManySelectable">
 		<button class="btn btn-primary btn_add">
 			<i class="fa fa-fw o_button_icon fa-plus icon"/>
-			<span>Ajouter</span>
+			<span>Add</span>
 		</button>
     </t>
 

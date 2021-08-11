@@ -1,4 +1,4 @@
-odoo.define('config_product_search.m2m_selectable', function (require) {
+odoo.define('advanced_products_search.m2m_selectable', function (require) {
 "use strict";
 
 var relational_fields = require('web.relational_fields');
@@ -45,26 +45,16 @@ var FieldM2mSelectable = relational_fields.FieldMany2Many.extend({
         if (!this.renderer.selection.length){
 			   new Dialog(this, {title: "Attention",
                                  size: 'medium',
-                                 $content: $("<div />").html("Vous devez selectionner au moins 1 article!")
+                                 $content: $("<div/>").html("Please select at least one product!")
 			                     }).open();
                return false;
         }
-        var self = this;
         var ids = [];
 
         const checked_rows = this.$('tr').filter((i, el) => this.renderer.selection.includes(el.dataset.id));
         checked_rows.find('.o_list_record_selector input').prop('checked', true);
 
         for(let i=0; i < checked_rows.length; i++) {
-            var prix_public = checked_rows[i].childNodes[checked_rows[i].childNodes.length - 2].textContent.trim();
-            if (prix_public === 'NA') {
-               new Dialog(self, {title: "Attention",
-                                 size: 'medium',
-                                 $content: $("<div/>").html("Un ou plusieurs articles sans prix public!<br>"+
-                                                            "Consultez votre administrateur système.")
-                                }).open();
-               return false;
-            }
             ids.push(parseInt(checked_rows[i].lastChild.textContent));
         }
         return ids;
@@ -89,12 +79,12 @@ var FieldM2mSelectable = relational_fields.FieldMany2Many.extend({
 
 
     show_added_products_count: function (prods_count){
-        var art = prods_count === 1 ? " Article" : " Articles";
+        var unit = prods_count === 1 ? " Product" : " Products";
         var tab_header = $(".page_inserted_products a")[0];
         tab_header.style = "background:#f2f2f2;color:green;font-weight:bold;";
-        tab_header.textContent = "+"+ prods_count + art;
+        tab_header.textContent = "+"+ prods_count + unit;
         setTimeout(function(){tab_header.style = "";
-		    					     tab_header.textContent = "Acticles Insérés";}, 1000);
+		    					     tab_header.textContent = "Used Products";}, 1000);
     },
 
 
