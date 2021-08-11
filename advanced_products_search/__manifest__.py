@@ -5,10 +5,10 @@
     'version': '1.0',
     'summary': "Advanced way to search products inside sale quotations/orders",
     'description': """ 
-                    Enhanced products search
-                    ========================
-                    Advanced way to search products in large catalogs or databases.
-                    User friendly and saves you precious time when working on your sales quotations or orders 
+Enhanced products search
+====================
+Advanced way to search products in large catalogs or databases.
+User friendly and saves you precious time when working on your sales quotations or orders 
                    """,
     'category': 'tools',
     'author': 'HichamTAROQ',
