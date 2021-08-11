@@ -13,7 +13,7 @@ User friendly and saves you precious time when working on your sales quotations 
     'category': 'tools',
     'author': 'Thicham',
     'website': 'https://github.com/thicham43',
-    'depends': ['account'],
+    'depends': ['sale', 'account'],
     'data': [
              'security/ir.model.access.csv',
              'views/assets.xml',
@@ -21,7 +21,7 @@ User friendly and saves you precious time when working on your sales quotations 
              'views/sale_order_view.xml',
             ],
     'qweb': ['static/src/xml/m2m_selectable.xml'],
-    'images': ['static/src/description/banner.png'],
+    'images': ['static/src/description/banner.gif'],
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
