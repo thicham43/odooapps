@@ -21,7 +21,7 @@ User friendly and saves you precious time when working on your sales quotations 
              'views/sale_order_view.xml',
             ],
     'qweb': ['static/src/xml/m2m_selectable.xml'],
-    'images': ['static/src/description/banner.gif'],
+    'images': ['static/description/banner.gif'],
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
