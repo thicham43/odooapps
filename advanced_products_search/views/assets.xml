@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_backend_config_product_search" name="config_product_search assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/config_product_search/static/src/css/style.css"/>
+            <script type="text/javascript" src="/config_product_search/static/src/js/m2m_selectable.js"></script>
+        </xpath>
+    </template>
+
+</odoo>

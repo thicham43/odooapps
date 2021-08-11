@@ -1,0 +1,57 @@
+
+.prod_search_form {
+	padding: 0 16px !important;
+}
+
+.control-btns {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+}
+
+.control-btns .btn-link:hover{
+	border: 1px solid #d5d8db;
+	border-radius: 3px;
+}
+
+.btn_criterias {
+	padding: 3px 12px;
+	margin: 0 4px 0 0;
+	width: 94px;
+}
+
+.criterias_div div {
+	width: 110px;
+	float: left;
+	margin-right: 10px;
+}
+
+.criterias_div label {
+	font-weight: normal !important;
+}
+
+.btn_add {
+	margin-bottom:5px;
+	padding: 2px 7px !important;
+}
+
+.list_product_search tr.o_data_row, .list_inserted_products tr.o_data_row {
+	pointer-events: none;
+}
+
+.list_product_search td.o_list_record_selector {
+	pointer-events: auto;
+}
+
+.list_product_search tr.o_data_row td:last-child, .list_product_search tr th:last-child {
+	display: none !important;
+}
+
+.list_product_search th[data-name='frs_short_name'] 		{width: 4% !important;}
+.list_product_search th[data-name='name'] 					{width: 42% !important;}
+.list_product_search th[data-name='frs_code_search'] 		{width: 12% !important;}
+.list_product_search th[data-name='commercial_code_search'] {width: 12% !important;}
+.list_product_search th[data-name='seats'] 					{width: 10% !important;}
+.list_product_search th[data-name='base_search'] 			{width: 5% !important;}
+.list_product_search th[data-name='public_price_str'] 	    {width: 15% !important;}
+
