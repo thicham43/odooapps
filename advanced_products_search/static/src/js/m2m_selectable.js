@@ -16,7 +16,6 @@ var FieldM2mSelectable = relational_fields.FieldMany2Many.extend({
         var self = this;
         return this._super.apply(this, arguments).then(function () {
             self.renderer.hasSelectors = true;
-            self.pagingState.limit = 20;
             self.$el.prepend(qweb.render("Many2ManySelectable", {widget: self}));
             self.$el.find(".btn_add").click(function(){
 	        	self.add_selected_products();
