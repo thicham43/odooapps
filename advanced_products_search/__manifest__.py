@@ -13,7 +13,7 @@ User friendly and saves you precious time when working on your sales quotations 
     'category': 'tools',
     'author': 'Thicham',
     'website': 'https://github.com/thicham43',
-    'depends': ['sale', 'account'],
+    'depends': ['sale_management', 'account'],
     'data': [
              'security/ir.model.access.csv',
              'views/assets.xml',
